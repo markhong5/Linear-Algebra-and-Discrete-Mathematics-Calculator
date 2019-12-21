@@ -31,5 +31,23 @@ class MyTestCase(unittest.TestCase):
         self.assertRaises(NonpositiveIntegerException, self.discrete_object.euclids_algorithm, -31, 198)
         self.assertRaises(NonpositiveIntegerException, self.discrete_object.euclids_algorithm, -198, 31)
 
+    def test_multiplicative_inverse(self):
+
+        self.assertEqual(self.discrete_object.inverse(77, 52), 25)
+        self.assertEqual(self.discrete_object.inverse(53, 71), 67)
+
+        self.assertEqual(self.discrete_object.inverse(71, 53), 3)
+        self.assertEqual(self.discrete_object.inverse(34, 55), 34)
+        self.assertEqual(self.discrete_object.inverse(55, 34), 13)
+
+        self.assertEqual(self.discrete_object.inverse(61, 54), 31)
+        self.assertEqual(self.discrete_object.inverse(54, 61), 26)
+
+        self.assertRaises(NoInverseException, self.discrete_object.inverse, 453, 3)
+        self.assertRaises(NoInverseException, self.discrete_object.inverse, 147, 630)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
