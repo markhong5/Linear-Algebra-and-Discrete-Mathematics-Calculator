@@ -1,16 +1,27 @@
 import collections
+import re
 
 InverseEquation = collections.namedtuple("InverseEquation", "value coefficient1 constant1 coefficient2 constant2")
+
 
 class NonpositiveIntegerException(Exception):
     pass
 
+
 class NoInverseException(Exception):
+    pass
+
+
+class InvalidBaseException(Exception):
+    pass
+
+
+class InvalidNumException(Exception):
     pass
 
 class IntegerProperties:
     def __init__(self):
-        self.visuals = True
+        self.visuals = False
         self.inverse_equations = []
 
     def integer_division(self, x: int, y: int):
@@ -42,7 +53,6 @@ class IntegerProperties:
 
         self.inverse_equations.insert(0, InverseEquation(value=r, coefficient1=1, constant1=larger, coefficient2=
                                                      -1 * (larger//smaller), constant2=smaller))
-
         while r != 0:
             larger = smaller
             smaller = r
@@ -108,6 +118,73 @@ class IntegerProperties:
 
         else:
             return 0
+
+    def base_to_deci(self, num: str, base: int):
+        """Takes a non-negative base number from 1-16 and turns it into its decimal representation"""
+
+        numberdict = {"A": 10, "B": 11, "C": 12, "D": 13, "E": 14, "F": 15}
+        new_num = 0
+        exponent = len(num) - 1
+        if base <= 0 or base > 16:
+            raise InvalidBaseException
+
+        pattern = re.compile(r"(^[(0-9)ABCDEF]+$)")
+
+        if re.match(pattern, num) == None:
+            raise InvalidNumException
+
+        for value in num:
+            if value in numberdict:
+                if numberdict[value] > base:
+                    raise InvalidNumException
+                new_num += (numberdict[value] * (base**exponent))
+            elif int(value) > base:
+                raise InvalidNumException
+            else:
+                new_num += (int(value) * (base ** exponent))
+            exponent -= 1
+        return new_num
+
+    def deci_to_base(self, num: int, base: int):
+        """Takes a non-negative base number from 1-16 and turns it into its decimal representation"""
+        if base <= 0 or base > 16:
+            raise InvalidBaseException
+        letterdict = {10: "A", 11: "B", 12: "C", 13: "D", 14: "E", 15: "F"}
+
+        new_deci_num = ""
+
+        while num != 0:
+            if num % base in letterdict:
+                new_deci_num += letterdict[num % base]
+            else:
+                new_deci_num += str(num % base)
+            num = num // base
+
+        return new_deci_num[::-1]
+
+    def fast_expo(self, base: int, exponent: int, mod: int):
+        """Preforms fast modular exponentiation"""
+
+        if base <= 0 or exponent <= 0 or mod <= 0:
+            raise NonpositiveIntegerException
+
+        partial = 1
+        current = base
+        expansion = exponent
+
+        while expansion > 0:
+            if expansion % 2 == 1:
+                partial *= (current % mod)
+            current *= (current % mod)
+            expansion = expansion // 2
+
+        return partial % mod
+
+
+
+
+
+
 
 
 
